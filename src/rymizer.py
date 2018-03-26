@@ -70,7 +70,6 @@ def getInfo(artist, album, dir):
             audio.save()
             print(audio["genre"])
 
-
     # Get descriptors from page
     descriptor_text = str(soup.findAll("span", {"class": "release_pri_descriptors"}))
     descriptor_text = descriptor_text[37:-7]
@@ -85,16 +84,15 @@ def getInfo(artist, album, dir):
     print ('\n' + artist + '->' + album + ' descriptors:'),
     print ', '.join(descriptor for descriptor in descriptors)
 
-    #######NOW WE PUT THE DESCRIPTORS IN THE FILES (WHAT ID3 TAG DO WE USE?)
-
+    ####### NOW WE PUT THE DESCRIPTORS IN THE FILES (WHAT ID3 TAG DO WE USE?)
 
 # Main function, goes through the given directory and finds albums to getInfo()
 if __name__ == "__main__":
     music_dir = sys.argv[1]
     artists = next(os.walk(music_dir))[1]
     for artist in artists:
-        albums = next(os.walk(artist))[1]
+        artist_dir = os.path.join(music_dir, artist)
+        albums = next(os.walk(artist_dir))[1]
         for album in albums:
-            album_dir = music_dir + '/' + artist + '/' + album
-            print album_dir
+            album_dir = os.path.join(artist_dir, album)
             getInfo(artist, album, album_dir)
