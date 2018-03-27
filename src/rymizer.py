@@ -16,11 +16,6 @@ https://github.com/pgaref/HTTP_Request_Randomizer
 https://mutagen.readthedocs.io/en/latest/user/id3.html
 """
 
-# TODO:
-# find a id3 tag to place descriptors in
-# add support for other tags?
-# prepare and submit to PyPI for easy install (http://peterdowns.com/posts/first-time-with-pypi.html)
-
 import sys
 import os
 import requests
@@ -56,9 +51,10 @@ def getInfo(artist, album, dir):
         genre = genre[3:-4]
         genres.append(genre)
 
+    genres = ';'.join(genre for genre in genres)
     # Print genres
     print (artist + '->' + album + ' genres:'),
-    print ', '.join(genre for genre in genres)
+    print genres
 
     #Put the genres in the files
     files = os.listdir(dir)
@@ -82,7 +78,7 @@ def getInfo(artist, album, dir):
 
     # Print descriptors
     print ('\n' + artist + '->' + album + ' descriptors:'),
-    print ', '.join(descriptor for descriptor in descriptors)
+    print ';'.join(descriptor for descriptor in descriptors)
 
     ####### NOW WE PUT THE DESCRIPTORS IN THE FILES (WHAT ID3 TAG DO WE USE?)
 
