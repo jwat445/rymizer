@@ -18,6 +18,7 @@ https://mutagen.readthedocs.io/en/latest/user/id3.html
 
 import sys
 import os
+import time
 import requests
 from http_request_randomizer.requests.proxy.requestProxy import RequestProxy
 import re
@@ -31,7 +32,7 @@ def getInfo(artist, album, dir):
 
     # Get the album page
     url = "https://rateyourmusic.com/release/album/" + artist +  "/" + album + "/"
-    print "\nGETTING: ", url +'\n'
+    print "\nGETTING: ", url + '\n'
     req_proxy = RequestProxy()
     page = req_proxy.generate_proxied_request(url)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -51,21 +52,6 @@ def getInfo(artist, album, dir):
         genre = genre[3:-4]
         genres.append(genre)
 
-    genres = ';'.join(genre for genre in genres)
-    # Print genres
-    print (artist + '->' + album + ' genres:'),
-    print genres
-
-    #Put the genres in the files
-    files = os.listdir(dir)
-    for file in files:
-        if str(file).endswith('.mp3'):
-            print file
-            audio = EasyID3(dir + '/' + file)
-            audio["genre"] = genres
-            audio.save()
-            print(audio["genre"])
-
     # Get descriptors from page
     descriptor_text = str(soup.findAll("span", {"class": "release_pri_descriptors"}))
     descriptor_text = descriptor_text[37:-7]
@@ -76,11 +62,29 @@ def getInfo(artist, album, dir):
         descriptor = descriptor[2:-1]
         descriptors.append(descriptor)
 
-    # Print descriptors
-    print ('\n' + artist + '->' + album + ' descriptors:'),
-    print ';'.join(descriptor for descriptor in descriptors)
+    # Print genres
+    genres = ';'.join(genre for genre in genres)
+    print (artist + '->' + album + ' genres:'),
+    print genres
 
-    ####### NOW WE PUT THE DESCRIPTORS IN THE FILES (WHAT ID3 TAG DO WE USE?)
+    # Print descriptors
+    descriptors = ';'.join(descriptor for descriptor in descriptors)
+    print (artist + '->' + album + ' descriptors:'),
+    print descriptors
+
+    #Put the genres in the files
+    files = os.listdir(dir)
+    for file in files:
+        if str(file).endswith('.mp3'):
+            print file
+            audio = EasyID3(dir + '/' + file)
+            audio["genre"] = genres
+            EasyID3.RegisterTextKey('comment', 'COMM')
+            audio['comment'] = 'blep'
+            audio["mood"] = 'blerp'
+            audio.save(v2_version=3)
+            print('Genres updated: ' + str(audio["genre"]))
+            print('Descriptors (mood) updated: ' + str(audio["mood"]))
 
 # Main function, goes through the given directory and finds albums to getInfo()
 if __name__ == "__main__":
@@ -92,3 +96,5 @@ if __name__ == "__main__":
         for album in albums:
             album_dir = os.path.join(artist_dir, album)
             getInfo(artist, album, album_dir)
+            time.sleep(1)
+    print "DONE!"
