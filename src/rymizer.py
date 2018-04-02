@@ -68,6 +68,7 @@ def getInfo(artist, album, dir):
     print genres
 
     # Print descriptors
+    descriptors = 'blerp' #WE ARENT GETTING DESCRIPTORS???? AR ETHEY BEING OVERRIDDEN SOMEHOW???
     descriptors = ';'.join(descriptor for descriptor in descriptors)
     print (artist + '->' + album + ' descriptors:'),
     print descriptors
@@ -80,8 +81,8 @@ def getInfo(artist, album, dir):
             audio = EasyID3(dir + '/' + file)
             audio["genre"] = genres
             EasyID3.RegisterTextKey('comment', 'COMM')
-            audio['comment'] = 'blep'
-            audio["mood"] = 'blerp'
+            audio['comment'] = descriptors
+            audio["mood"] = descriptors
             audio.save(v2_version=3)
             print('Genres updated: ' + str(audio["genre"]))
             print('Descriptors (mood) updated: ' + str(audio["mood"]))
