@@ -24,6 +24,7 @@ from http_request_randomizer.requests.proxy.requestProxy import RequestProxy
 import re
 from bs4 import BeautifulSoup
 from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3
 
 # Gets info of the album from rateyourmusic.com
 def getInfo(artist, album, dir):
@@ -68,7 +69,7 @@ def getInfo(artist, album, dir):
     print genres
 
     # Print descriptors
-    descriptors = 'blerp' #WE ARENT GETTING DESCRIPTORS???? AR ETHEY BEING OVERRIDDEN SOMEHOW???
+    descriptors = 'blerp' #WE ARENT GETTING DESCRIPTORS???? ARE THEY BEING OVERRIDDEN SOMEHOW???
     descriptors = ';'.join(descriptor for descriptor in descriptors)
     print (artist + '->' + album + ' descriptors:'),
     print descriptors
@@ -78,12 +79,17 @@ def getInfo(artist, album, dir):
     for file in files:
         if str(file).endswith('.mp3'):
             print file
+            a = ID3(dir + '/' + file)
+            print a.version()
             audio = EasyID3(dir + '/' + file)
             audio["genre"] = genres
             EasyID3.RegisterTextKey('comment', 'COMM')
             audio['comment'] = descriptors
+            EasyID3.RegisterTextKey('mood', 'TMOO')
             audio["mood"] = descriptors
-            audio.save(v2_version=3)
+            print audio.version()
+            audio.save() #MAYBE IT"S THAT WE SAVE IT WRONG THAT MOOD WONT SHOW UP????
+            #audio.save(v2_version=3)
             print('Genres updated: ' + str(audio["genre"]))
             print('Descriptors (mood) updated: ' + str(audio["mood"]))
 
