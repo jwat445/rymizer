@@ -85,13 +85,16 @@ def editFiles(genres, descriptors, dir):
             if str(file).endswith('.mp3'):
                 print file
                 if '?' in str(file):
-                    print 'invalid file name. Skipping...'
+                    print 'Invalid file name. Skipping...'
                     continue
                 try:
                     tags = ID3(dir + '\\' + file)
                 except ID3NoHeaderError:
                     print "Adding ID3 header;",
                     tags = ID3()
+                except:
+                    print 'Could not find file. Skipping...'
+                    continue
 
                 # tags["TIT2"] = TIT2(encoding=3, text='title')
                 # tags["TALB"] = TALB(encoding=3, text=u'mutagen Album Name')
@@ -133,21 +136,21 @@ def tryInfo(url, artist, album):
         print "\nFAILED. Trying alternate url (_ and -)"
         artist = artist.replace('-', '_')
         for i in progressbar.progressbar(range(100)):
-            time.sleep(1.6)
+            time.sleep(1.2)
         genres, descriptors = getInfo(url, artist, album)
     # _ and _
     if all(genre is '' for genre in genres) and all(descriptor is '' for descriptor in descriptors):
         print "\nFAILED. Trying alternate url (_ and _)"
         album = album.replace('-', '_')
         for i in progressbar.progressbar(range(100)):
-            time.sleep(1.6)
+            time.sleep(1)
         genres, descriptors = getInfo(url, artist, album)
     # - and _
     if all(genre is '' for genre in genres) and all(descriptor is '' for descriptor in descriptors):
         print "\nFAILED. Trying alternate url (- and _)"
         artist = artist.replace('_', '-')
         for i in progressbar.progressbar(range(100)):
-            time.sleep(1.6)
+            time.sleep(.6)
         genres, descriptors = getInfo(url, artist, album)
     return genres, descriptors
 
@@ -188,28 +191,31 @@ if __name__ == "__main__":
     for artist in artists:
         n += 1
         print n
-        if n < 1:
+        if n < 168:
             print 'skipping ' + artist
             continue
         artist_dir = os.path.join(music_dir, artist)
         albums = next(os.walk(artist_dir))[1]
         for album in albums:
-            album_dir = os.path.join(artist_dir, album)
-            print 'cooling down'
-            for i in progressbar.progressbar(range(100)): # Maybe we can not use our user agent? Ignore robots.txt?? But arent they seeing my ip anyways????
-                time.sleep(1)
-            while True:
-                print 'hullo'
-                try:
-                    tag(artist, album, album_dir)
-                except AttributeError, TypeError:
-                    print 'Proxy discovered. Waiting...'
-                    for i in progressbar.progressbar(range(100)):
-                        time.sleep(7)
-                    print 'Waiting....'
-                    for i in progressbar.progressbar(range(100)):
-                        time.sleep(7)
-                    print 'Wait done. Trying again'
-                    continue
-                break
+            try:
+                album_dir = os.path.join(artist_dir, album)
+                print 'cooling down'
+                for i in progressbar.progressbar(range(100)): # Maybe we can not use our user agent? Ignore robots.txt?? But arent they seeing my ip anyways????
+                    time.sleep(.5)
+                while True:
+                    try:
+                        tag(artist, album, album_dir)
+                    except AttributeError, TypeError:
+                        print 'Proxy discovered. Waiting...'
+                        for i in progressbar.progressbar(range(100)):
+                            time.sleep(4)
+                        print 'Waiting....'
+                        for i in progressbar.progressbar(range(100)):
+                            time.sleep(4)
+                        print 'Wait done. Trying again'
+                        continue
+                    break
+            except KeyboardInterrupt:
+                print artist
+                sys.exit(0)
     print "DONE!"
