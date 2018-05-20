@@ -104,3 +104,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+rymizer.code-workspace
+.vscode/launch.json
+.vscode/tasks.json

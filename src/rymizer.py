@@ -24,6 +24,7 @@ from http_request_randomizer.requests.proxy.requestProxy import RequestProxy
 import re
 from bs4 import BeautifulSoup
 import progressbar
+import random
 # from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TPE2, COMM, USLT, TCOM, TCON, TDRC, TMOO, ID3NoHeaderError
 
@@ -135,22 +136,22 @@ def tryInfo(url, artist, album):
     if all(genre is '' for genre in genres) and all(descriptor is '' for descriptor in descriptors):
         print "\nFAILED. Trying alternate url (_ and -)"
         artist = artist.replace('-', '_')
-        for i in progressbar.progressbar(range(100)):
-            time.sleep(1.2)
+        # for i in progressbar.progressbar(range(100)):
+        time.sleep(random.randint(110, 130))
         genres, descriptors = getInfo(url, artist, album)
     # _ and _
     if all(genre is '' for genre in genres) and all(descriptor is '' for descriptor in descriptors):
         print "\nFAILED. Trying alternate url (_ and _)"
         album = album.replace('-', '_')
-        for i in progressbar.progressbar(range(100)):
-            time.sleep(1)
+        # for i in progressbar.progressbar(range(100)):
+        time.sleep(random.randint(90, 110))
         genres, descriptors = getInfo(url, artist, album)
     # - and _
     if all(genre is '' for genre in genres) and all(descriptor is '' for descriptor in descriptors):
         print "\nFAILED. Trying alternate url (- and _)"
         artist = artist.replace('_', '-')
-        for i in progressbar.progressbar(range(100)):
-            time.sleep(.6)
+        # for i in progressbar.progressbar(range(100)):
+        time.sleep(random.randint(50, 70))
         genres, descriptors = getInfo(url, artist, album)
     return genres, descriptors
 
@@ -191,7 +192,7 @@ if __name__ == "__main__":
     for artist in artists:
         n += 1
         print n
-        if n < 168:
+        if n < 324:
             print 'skipping ' + artist
             continue
         artist_dir = os.path.join(music_dir, artist)
@@ -200,22 +201,22 @@ if __name__ == "__main__":
             try:
                 album_dir = os.path.join(artist_dir, album)
                 print 'cooling down'
-                for i in progressbar.progressbar(range(100)): # Maybe we can not use our user agent? Ignore robots.txt?? But arent they seeing my ip anyways????
-                    time.sleep(.5)
+                # for i in progressbar.progressbar(range(100)):
+                time.sleep(random.randint(40, 80))
                 while True:
                     try:
                         tag(artist, album, album_dir)
                     except AttributeError, TypeError:
                         print 'Proxy discovered. Waiting...'
-                        for i in progressbar.progressbar(range(100)):
-                            time.sleep(4)
+                        #for i in progressbar.progressbar(range(100)):
+                        time.sleep(random.randint(200, 600))
                         print 'Waiting....'
-                        for i in progressbar.progressbar(range(100)):
-                            time.sleep(4)
+                        #for i in progressbar.progressbar(range(100)):
+                        time.sleep(random.randint(300, 500))
                         print 'Wait done. Trying again'
                         continue
                     break
             except KeyboardInterrupt:
                 print artist
-                sys.exit(0)
+                sys.exit(1)
     print "DONE!"
